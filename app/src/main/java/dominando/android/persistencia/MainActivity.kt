@@ -1,6 +1,7 @@
 package dominando.android.persistencia
 
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.os.Environment
@@ -9,8 +10,15 @@ import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
+import androidx.preference.PreferenceManager
 import dominando.android.persistencia.databinding.ActivityMainBinding
-import java.io.*
+import java.io.BufferedReader
+import java.io.File
+import java.io.FileInputStream
+import java.io.FileOutputStream
+import java.io.IOException
+import java.io.InputStreamReader
+import java.io.PrintWriter
 
 class MainActivity : AppCompatActivity() {
 
@@ -23,6 +31,44 @@ class MainActivity : AppCompatActivity() {
 
         binding.btnRead.setOnClickListener { btnReadClick() }
         binding.btnSave.setOnClickListener { btnSaveClick() }
+
+        binding.btnOpenPref.setOnClickListener {
+            startActivity(
+                Intent(
+                    this,
+                    ConfigActivity::class.java
+                )
+            )
+        }
+        binding.btnReadPref.setOnClickListener { readPrefs() }
+    }
+
+    private fun readPrefs() {
+        val prefs = PreferenceManager.getDefaultSharedPreferences(this)
+
+        val city = prefs.getString(
+            getString(R.string.pref_city),
+            getString(R.string.pref_city_default)
+        )
+
+        val socialNetwork = prefs.getString(
+            getString(R.string.pref_social_network),
+            getString(R.string.pref_social_network_default)
+        )
+
+        val messages = prefs.getBoolean(getString(R.string.pref_messages), false)
+
+        val msg = String.format(
+            "%s = %s\n%s = %s\n%s = %s",
+            getString(R.string.title_city),
+            city,
+            getString(R.string.title_social_network),
+            socialNetwork,
+            getString(R.string.title_messages),
+            messages.toString()
+        )
+
+        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
     }
 
     private fun btnReadClick() {
